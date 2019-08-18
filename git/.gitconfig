@@ -1,0 +1,30 @@
+[user]
+    name = Fernando Heck
+    email = heckfer@gmail.com
+
+[color]
+    ui = auto
+
+[alias]
+    st = status
+    co = checkout
+
+    prb = pull -r
+    prbm = pull --rebase origin master
+
+    boom = clean -fd
+
+    dc = diff --cached
+    dns = diff --ignore-space-change
+
+    pb = "!f() { git push -u origin $(git rev-parse --abbrev-ref HEAD); }; f"
+    cs = "!f() { EDITOR=vim git commit --author=\""${1}" <$(git config user.email)>\" -e -m ["$2"]; }; f"
+
+    please = push --force-with-lease
+    delete-merged-branches = "!git co master && git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+
+
+[core]
+	pager = diff-so-fancy | less --tabs=4 -RFX
+	excludesfile = /Users/heckfer/.gitignore_global
+
