@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 
-echo "symlinking dotfiles..."
-ln -sf $(pwd)/vim/.vimrc ~/.vimrc
-ln -sf $(pwd)/git/.gitconfig ~/.gitconfig
-ln -sf $(pwd)/git/.gitignore_global ~/.gitignore_global
-ln -sf $(pwd)/zsh/.zshrc ~/.zshrc
-echo "files symlinked"
+set -o errexit
+set -o pipefail
+set -o nounset
+#set -o xtrace
 
-source ~/.zshrc
+echo "configuring..."
 
 echo "java plugin..."
 asdf plugin-add java
@@ -50,7 +48,7 @@ brew install jq
 brew install p7zip
 echo "finished instal utilities"
 
-
+echo "done, now go and install the vscode plugins and the themes..."
 
 # https://draculatheme.com/vim/
 # https://draculatheme.com/sublime/
