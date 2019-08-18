@@ -4,6 +4,9 @@ echo "installing..."
 echo "downloading sublime..."
 curl https://download.sublimetext.com/Sublime%20Text%20Build%203207.dmg --output ~/Downloads/sublime.dmg
 
+echo "add sublime to path..."
+ln -s /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl /usr/local/bin/sublime
+
 echo "downloading vscode..."
 curl https://az764295.vo.msecnd.net/stable/f06011ac164ae4dc8e753a3fe7f9549844d15e35/VSCode-darwin-stable.zip --output ~/Downloads/VSCode-darwin-stable.zip
 
@@ -78,9 +81,6 @@ ln -sf $(pwd)/git/.gitconfig ~/.gitconfig
 ln -sf $(pwd)/git/.gitignore_global ~/.gitignore_global
 ln -sf $(pwd)/zsh/.zshrc ~/.zshrc
 echo "files symlinked"
-
-echo "download node..."
-curl https://nodejs.org/dist/v10.16.3/node-v10.16.3.pkg --output node-v10.16.3.pkg
 
 chsh -s $(which zsh)
 
