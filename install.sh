@@ -4,8 +4,23 @@ set -o pipefail
 set -o nounset
 #set -o xtrace
 
+
 echo "installing..."
 
+echo "downloading docker..."
+curl https://download.docker.com/mac/stable/Docker.dmg --output ~/Downloads/Docker.dmg
+
+echo "downloading dropbox..."
+curl https://dl-web.dropbox.com/installer?build_no=79.4.143&plat=mac&tag=eJyrVipOLS7OzM-Lz0xRslIwNjA1NTCzMDI3NjAwNLA0twACMxMzM2NzQ1MLkJihibmhpWEtAKkJDbg~%40META&tag_token=AOSTYpaJOWunqm2OJDHs3dl68_zmi2pl_eJ8jWKQURHAqA  --output ~/Downloads/dropbox
+
+echo "downloading 1password6..."
+curl https://c.1password.com/dist/1P/mac4/1Password-6.8.9.pkg --output ~/Downloads/1Password-6.8.9.pkg
+
+echo "downloading datagrip..."
+curl https://download-cf.jetbrains.com/datagrip/datagrip-2019.2.2.dmg --output ~/Downloads/datagrip-2019.2.2.dmg
+
+echo "downloading charles..."
+curl https://www.charlesproxy.com/assets/release/4.2.8/charles-proxy-4.2.8.dmg --output ~/Downloads/charles-proxy-4.2.8.dmg
 
 echo "downloading sublime..."
 curl https://download.sublimetext.com/Sublime%20Text%20Build%203207.dmg --output ~/Downloads/sublime.dmg
