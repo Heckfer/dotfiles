@@ -36,5 +36,11 @@ echo "installing homebrew..."
 [ ! -f "`which brew`" ] && /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 echo "homebrew installed"
 
-chsh -s $(which zsh)
+echo "symlinking dotfiles..."
+ln -sf $(pwd)/vim/.vimrc ~/.vimrc
+ln -sf $(pwd)/git/.gitconfig ~/.gitconfig
+ln -sf $(pwd)/git/.gitignore_global ~/.gitignore_global
+ln -sf $(pwd)/zsh/.zshrc ~/.zshrc
+echo "files symlinked"
 
+chsh -s $(which zsh)
