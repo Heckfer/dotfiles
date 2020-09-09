@@ -6,10 +6,9 @@
     ui = auto
 
 [alias]
-    st = status
     co = checkout
 
-    prb = pull -r
+    prb = pull --rebase
     prbm = pull --rebase origin master
 
     boom = clean -fd
@@ -18,9 +17,33 @@
     dns = diff --ignore-space-change
 
     pb = "!f() { git push -u origin $(git rev-parse --abbrev-ref HEAD); }; f"
-    cs = "!f() { EDITOR=vim git commit --author=\""${1}" <$(git config user.email)>\" -e -m ["$2"]; }; f"
+
+    cs = "!f() { \
+        TASK_ID=$(cut -d'/' -f1 <<< $(git rev-parse --abbrev-ref HEAD)); \
+        EDITOR=vim; \
+        COMMIT_MESSAGE="[${TASK_ID}]"; \
+        git commit -e -m "\"${COMMIT_MESSAGE}\""; \
+    }; f"
+
+    release = "!f() { \
+        set -ae; \
+        RELEASE_NAME=$1; \
+        CURRENT_FOLDER=${PWD##*/}; \
+        LATEST_TAG=$(git describe --tags --abbrev=0); \
+        MERGES=$(git log --oneline --decorate --graph --merges "$LATEST_TAG"..HEAD); \
+        TRIPLE_BACK_TICK='```'; \
+        SINGLE_BACK_TICK='`'; \
+        HASH=##; \
+        RELEASE_MESSAGE=\"@here I am going to release $CURRENT_FOLDER\\n\\nProduct: $SINGLE_BACK_TICK$CURRENT_FOLDER $RELEASE_NAME$SINGLE_BACK_TICK\\nRelease URL:\\n\\n$TRIPLE_BACK_TICK\\n$HASH\\n\\n$HASH Merged PRs\\n$MERGES\\n$TRIPLE_BACK_TICK\"; \
+        echo $RELEASE_MESSAGE; \
+        echo $RELEASE_MESSAGE | pbcopy;  \
+        git tag $1; \
+        echo "The release message is in your clipboard. Paste it in your favorite editor and add the human readable features and bug fixes and then paste it in slack";  \
+    }; f"
+
 
     please = push --force-with-lease
+
     delete-merged-branches = "!git co master && git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
 
 
