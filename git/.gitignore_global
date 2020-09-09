@@ -8,11 +8,14 @@
 .elixir_ls/
 .vscode/
 
-# asdf
-.tool-versions
-
 # cocoapods
 Pods/
 
 # Xcode
 *.xcworkspace/xcuserdata
+
+# camper-web - this is needed for the elm plugin to work with elm 0.18
+elm.json
+
+# asdf
+.tool-versions
