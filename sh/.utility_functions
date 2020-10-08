@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+function heckshot() {
+    FILENAME="$1"
+    FILENAME="${FILENAME:-screenshot}"
+    adb shell screencap -p /sdcard/"$FILENAME".png
+    adb pull /sdcard/"$FILENAME".png "$2"
+    adb shell rm /sdcard/"$FILENAME".png
+}
+
+function format() {
+  git diff --name-only | grep -e '\(.*\).swift$' | while read -r line; do
+    swiftformat "$line";
+    # git add $line;
+  done
+}
+
+function unzip() {
+  input=${1}
+  output_folder=${2:-subtitles}
+
+  case ${#} in
+    1)
+      echo "input - ${input}"
+      echo "output folder - ${output_folder}"
+      7z x -o"${output_folder}" "${input}"
+      echo "deleting ${input}"
+      rm "${input}"
+    ;;
+    2)
+      echo "input - ${input}"
+      echo "output folder - ${output_folder}"
+      7z x -o"${output_folder}" "${input}"
+      echo "deleting ${input}"
+      rm "${input}"
+    ;;
+    *)
+      echo "You passed ${#} arguments, what are you trying?"
+    ;;
+  esac
+}
+
+function clean-phone() {
+  PHONE=$(echo "$1" | tr -d -c 0-9)
+  echo $PHONE | pbcopy
+  echo "> Phone is in the clipboard"
+  echo ""
+  echo $PHONE
+  echo ""
+}
+
+function pair() {
+  ip_or_hostname=$1
+  if grep "^[a-zA-Z]" < <(echo "$ip_or_hostname"); then
+    ip_or_hostname=${ip_or_hostname}.lan
+  fi
+  open vnc://"$ip_or_hostname"
+}
+
+function echo-title() {
+    echo ""
+    echo "> $1"
+    echo ""
+}
+
+function echo-and-copy-info() {
+    echo "$1" | pbcopy
+    echo "$1"
+    echo ""
+}
+
+
+function set-flags() {
+    set -o pipefail
+    set -o nounset
+}
+
+function unset-flags() {
+    set +o pipefail
+    set +o nounset
+}
