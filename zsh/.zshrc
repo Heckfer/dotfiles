@@ -35,3 +35,4 @@ if [ -f '/Users/heckfer/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/heckfer
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/heckfer/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/heckfer/google-cloud-sdk/completion.zsh.inc'; fi
+
