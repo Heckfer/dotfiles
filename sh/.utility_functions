@@ -42,10 +42,10 @@ function unzip() {
 
 function clean-phone() {
   PHONE=$(echo "$1" | tr -d -c 0-9)
-  echo $PHONE | pbcopy
+  echo "$PHONE" | pbcopy
   echo "> Phone is in the clipboard"
   echo ""
-  echo $PHONE
+  echo "$PHONE"
   echo ""
 }
 
