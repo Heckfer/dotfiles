@@ -79,3 +79,20 @@ function unset-flags() {
     set +o pipefail
     set +o nounset
 }
+
+function reimbursement() {
+    echo "Usage: reimbursement VALUE \"REASON\" "YYYY-MM-DD - HH:mm BRT" "
+    MESSAGE=$(cat <<-END
+Hi Camila, I am requesting a reimbursement. You can add the amount to my amex sheet.
+
+Total: R\$$1
+Reason: $2
+Date and time: $3 BRT
+    
+END
+    )
+    echo "$MESSAGE"
+    echo "$MESSAGE" | pbcopy
+    echo "--------\nThe message is in the clipboard"
+    
+}
