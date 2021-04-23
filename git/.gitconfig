@@ -20,7 +20,6 @@
 
     cs = "!f() { \
         TASK_ID=$(cut -d'/' -f1 <<< $(git rev-parse --abbrev-ref HEAD)); \
-        EDITOR=vim; \
         COMMIT_MESSAGE="[${TASK_ID}]"; \
         git commit -e -m "\"${COMMIT_MESSAGE}\""; \
     }; f"
