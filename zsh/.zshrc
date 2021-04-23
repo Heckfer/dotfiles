@@ -11,6 +11,8 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
+export EDITOR="/usr/bin/vim"
+
 # ASDF
 . $HOME/.asdf/asdf.sh
 . $HOME/.asdf/completions/asdf.bash
