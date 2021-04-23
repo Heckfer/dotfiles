@@ -80,7 +80,7 @@ function unset-flags() {
     set +o nounset
 }
 
-function reimbursement() {
+function report-reimbursement() {
     echo "Usage: reimbursement VALUE \"REASON\" "YYYY-MM-DD - HH:mm BRT" "
     MESSAGE=$(cat <<-END
 Hi Camila, I am requesting a reimbursement. You can add the amount to my amex sheet.
