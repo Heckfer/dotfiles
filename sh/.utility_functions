@@ -96,3 +96,14 @@ END
     echo "--------\nThe message is in the clipboard"
     
 }
+
+function report-db-update() {
+    echo "Usage: db-update STAGING user-service \"drop table users;\""
+
+    MESSAGE="Hi @channel, I will perform a DB update\n\n\n\`[${1}]\` - \`[${2}]\`\n\n\`\`\`${3}\`\`\`"
+
+    echo "The following is in your clipboard now\!"
+
+    echo "$MESSAGE"
+    echo "$MESSAGE" | pbcopy
+}
