@@ -32,10 +32,3 @@ source ~/.heck/.alias
 source ~/.heck/.utility_functions
 source ~/.heck/.cg_functions
 source ~/.heck/.kube_alias
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/heckfer/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/heckfer/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/heckfer/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/heckfer/google-cloud-sdk/completion.zsh.inc'; fi
-
