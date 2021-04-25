@@ -31,6 +31,7 @@ export PKG_CONFIG_PATH="${PKG_CONFIG_PATH} /usr/local/opt/zlib/lib/pkgconfig"
 source ~/.heck/.alias
 source ~/.heck/.utility_functions
 source ~/.heck/.cg_functions
+source ~/.heck/.kube_alias
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/heckfer/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/heckfer/google-cloud-sdk/path.zsh.inc'; fi
