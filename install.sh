@@ -22,6 +22,7 @@ echo "- Homebrew"
 
 echo "== Configuration =="
 echo "- Add sublime to path - ln -s /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl /usr/local/bin/sublime"
+echo "- Sublime plugins (MarkdownPreview, Pretty JSON)"
 echo "- VSCode plugins (code spell checker, docker, editorconfig for vs code, elixirls, elm, env, gitlens, php-cs-fixer, prettier, sass )"
 echo "oh-my-zsh..."
 echo "[ -d ~/.oh-my-zsh ] || git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh"
