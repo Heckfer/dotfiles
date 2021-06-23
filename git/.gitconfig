@@ -34,12 +34,11 @@
         SINGLE_BACK_TICK='`'; \
         HASH=##; \
         RELEASE_MESSAGE=\"@here I am going to release $CURRENT_FOLDER\\n\\nProduct: $SINGLE_BACK_TICK$CURRENT_FOLDER $RELEASE_NAME$SINGLE_BACK_TICK\\nRelease URL:\\n\\n$TRIPLE_BACK_TICK\\n$HASH\\n\\n$HASH Merged PRs\\n$MERGES\\n$TRIPLE_BACK_TICK\"; \
-        echo $RELEASE_MESSAGE; \
-        echo $RELEASE_MESSAGE | pbcopy;  \
+        echo \"$RELEASE_MESSAGE\"; \
+        echo \"$RELEASE_MESSAGE\" | pbcopy;  \
         git tag $1; \
         echo "The release message is in your clipboard. Paste it in your favorite editor and add the human readable features and bug fixes and then paste it in slack";  \
     }; f"
-
 
     please = push --force-with-lease
 
