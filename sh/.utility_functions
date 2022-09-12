@@ -107,3 +107,14 @@ function report-db-update() {
     echo "$MESSAGE"
     echo "$MESSAGE" | pbcopy
 }
+
+function split_csv() {
+        HEADER=$(head -1 "$1")
+        CHUNK=$2
+        tail -n +2 "$1" | split -d -l "$CHUNK" - "$1_split_"
+        for i in "$1"_split_*
+        do
+          gsed -i -e "1i$HEADER" "$i"
+          mv "$i" "$i.csv"
+        done
+}
