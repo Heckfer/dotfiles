@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/heckfer/.oh-my-zsh"
+export ZSH="/Users/fheck/.oh-my-zsh"
 
 ZSH_THEME="robbyrussell"
 
