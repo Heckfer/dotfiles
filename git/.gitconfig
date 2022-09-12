@@ -10,7 +10,6 @@
     co = checkout
 
     prb = pull --rebase
-    prbm = pull --rebase origin master
 
     boom = clean -fd
 
@@ -43,7 +42,7 @@
 
     please = push --force-with-lease
 
-    delete-merged-branches = "!git co master && git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+    delete-merged-branches = "!git co main && git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
 
 
 [core]
@@ -55,3 +54,5 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[init]
+	defaultBranch = main
