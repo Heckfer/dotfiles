@@ -5,7 +5,7 @@ export ZSH="/Users/fheck/.oh-my-zsh"
 
 ZSH_THEME="robbyrussell"
 
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting asdf command-time)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -17,8 +17,6 @@ export EDITOR="/usr/bin/vim"
 . $HOME/.asdf/asdf.sh
 . $HOME/.asdf/completions/asdf.bash
 . ~/.asdf/plugins/java/set-java-home.zsh
-
-# For PATH setup check ~/.zshenv
 
 # For compilers to find zlib you may need to set:
 export LDFLAGS="${LDFLAGS} -L/usr/local/opt/zlib/lib"
