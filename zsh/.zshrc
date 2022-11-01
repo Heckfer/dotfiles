@@ -26,5 +26,3 @@ export PKG_CONFIG_PATH="${PKG_CONFIG_PATH} /usr/local/opt/zlib/lib/pkgconfig"
 # Helper Functions
 source ~/.heck/.alias
 source ~/.heck/.utility_functions
-source ~/.heck/.cg_functions
-source ~/.heck/.kube_alias
