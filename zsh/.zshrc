@@ -14,8 +14,6 @@ source $ZSH/oh-my-zsh.sh
 export EDITOR="/usr/bin/vim"
 
 # ASDF
-. $HOME/.asdf/asdf.sh
-. $HOME/.asdf/completions/asdf.bash
 . ~/.asdf/plugins/java/set-java-home.zsh
 
 # For compilers to find zlib you may need to set:
