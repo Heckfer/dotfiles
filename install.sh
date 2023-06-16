@@ -38,6 +38,6 @@ ln -sf $(pwd)/git/.gitignore_global ~/.gitignore_global
 ln -sf $(pwd)/zsh/.zshrc ~/.zshrc
 ln -sf $(pwd)/zsh/.zshenv ~/.zshenv
 mkdir ~/.heck
-ln -sf $(pwd)/sh/.utility_functions ~/.utility_functions
+ln -sf $(pwd)/sh/.utility_functions ~/.heck/.utility_functions
 
 chsh -s $(which zsh)
