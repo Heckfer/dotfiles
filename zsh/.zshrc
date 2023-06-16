@@ -16,6 +16,7 @@ export EDITOR="/usr/bin/vim"
 # ASDF
 . ~/.asdf/plugins/java/set-java-home.zsh
 
+
 # For compilers to find zlib you may need to set:
 export LDFLAGS="${LDFLAGS} -L/usr/local/opt/zlib/lib"
 export CPPFLAGS="${CPPFLAGS} -I/usr/local/opt/zlib/include"
