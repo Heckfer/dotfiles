@@ -45,6 +45,26 @@
         echo ""; \
     }; f"
 
+    changes = "!f() { \
+        set -ae; \
+        RELEASE_NAME=$2; \
+        PROJECT_NAME=${PWD##*/}; \
+        LATEST_TAG=$(git describe --tags --abbrev=0); \
+        MERGES=$(git log --oneline --decorate --graph --merges "$1".."$2"); \
+        TRIPLE_BACK_TICK='```'; \
+        SINGLE_BACK_TICK='`'; \
+        HASH=##; \
+        RELEASE_MESSAGE=\"@here We are going to release $PROJECT_NAME\\n\\nApp: $SINGLE_BACK_TICK$PROJECT_NAME $RELEASE_NAME$SINGLE_BACK_TICK\\n\\n$TRIPLE_BACK_TICK\\n$HASH\\n\\n$HASH Merged PRs\\n$MERGES\\n$TRIPLE_BACK_TICK\"; \
+        echo \"$RELEASE_MESSAGE\"; \
+        echo \"$RELEASE_MESSAGE\" | pbcopy; \
+        echo ""; \
+        echo "=============================================================================="; \
+        echo " The changes message is in your clipboard.";  \
+        echo " Add the human readable features and bug fixes and then paste it in slack"; \
+        echo "=============================================================================="; \
+        echo ""; \
+    }; f"
+
     please = push --force-with-lease
 
     delete-merged-branches = "!git co main && git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
