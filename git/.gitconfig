@@ -26,18 +26,23 @@
 
     release = "!f() { \
         set -ae; \
-        RELEASE_NAME=$1; \
-        CURRENT_FOLDER=${PWD##*/}; \
+        RELEASE_NAME=$2; \
+        PROJECT_NAME=${PWD##*/}; \
         LATEST_TAG=$(git describe --tags --abbrev=0); \
-        MERGES=$(git log --oneline --decorate --graph --merges "$LATEST_TAG"..HEAD); \
+        MERGES=$(git log --oneline --decorate --graph --merges "$1".."$2"); \
         TRIPLE_BACK_TICK='```'; \
         SINGLE_BACK_TICK='`'; \
         HASH=##; \
-        RELEASE_MESSAGE=\"@here I am going to release $CURRENT_FOLDER\\n\\nProduct: $SINGLE_BACK_TICK$CURRENT_FOLDER $RELEASE_NAME$SINGLE_BACK_TICK\\nRelease URL:\\n\\n$TRIPLE_BACK_TICK\\n$HASH\\n\\n$HASH Merged PRs\\n$MERGES\\n$TRIPLE_BACK_TICK\"; \
+        RELEASE_MESSAGE=\"@here We are going to release $PROJECT_NAME\\n\\nApp: $SINGLE_BACK_TICK$PROJECT_NAME $RELEASE_NAME$SINGLE_BACK_TICK\\n\\n$TRIPLE_BACK_TICK\\n$HASH\\n\\n$HASH Merged PRs\\n$MERGES\\n$TRIPLE_BACK_TICK\"; \
         echo \"$RELEASE_MESSAGE\"; \
         echo \"$RELEASE_MESSAGE\" | pbcopy;  \
-        git tag $1; \
-        echo "The release message is in your clipboard. Paste it in your favorite editor and add the human readable features and bug fixes and then paste it in slack";  \
+        git tag $2; \
+        echo ""; \
+        echo "=============================================================================="; \
+        echo " The changes message is in your clipboard.";  \
+        echo " Add the human readable features and bug fixes and then paste it in slack"; \
+        echo "=============================================================================="; \
+        echo ""; \
     }; f"
 
     please = push --force-with-lease
