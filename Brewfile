@@ -1,0 +1,7 @@
+brew "bat"
+brew "diff-so-fancy"
+brew "httpie"
+brew "node"
+brew "yarn"
+brew "jq"
+brew "p7zip"

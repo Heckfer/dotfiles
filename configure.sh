@@ -37,16 +37,7 @@ asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
 asdf install elixir 1.7.4-otp-21
 asdf install elixir 1.8.1-otp-21
 
-
-echo "installing utilities..."
-brew install bat
-brew install diff-so-fancy
-brew install httpie
-brew install node
-brew install yarn
-brew install jq
-brew install p7zip
-echo "finished instal utilities"
+echo "finished installing utilities"
 
 echo "done, now go and install the vscode plugins and the themes..."
 
