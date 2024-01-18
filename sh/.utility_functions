@@ -118,3 +118,11 @@ function split_csv() {
           mv "$i" "$i.csv"
         done
 }
+
+function stop_vpn() {
+  launchctl unload /Library/LaunchAgents/com.paloaltonetworks.gp.pangp*
+}
+
+function start_vpn() {
+  launchctl load /Library/LaunchAgents/com.paloaltonetworks.gp.pangp*
+}
