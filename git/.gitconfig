@@ -67,7 +67,7 @@
 
     please = push --force-with-lease
 
-    delete-merged-branches = "!git co develop && git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+    delete-merged-branches = "!git co main && git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
 
 
 [core]
