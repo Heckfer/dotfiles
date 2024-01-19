@@ -126,3 +126,14 @@ function stop_vpn() {
 function start_vpn() {
   launchctl load /Library/LaunchAgents/com.paloaltonetworks.gp.pangp*
 }
+
+function backup_sublime_tabs() {
+  SUBLIME_SESSION_PATH="/Users/fheck/Library/Application Support/Sublime Text/Local"
+  rm "$SUBLIME_SESSION_PATH/Backup*"
+
+  TIMESTAMP=$(date +%y%m%d%H%M%S)
+  BKP_FILE_NAME="sublime_bkp_$TIMESTAMP.zip"
+  (cd $SUBLIME_SESSION_PATH && zip $BKP_FILE_NAME *)
+  mkdir -p /Users/fheck/Documents/bkp
+  mv $SUBLIME_SESSION_PATH/$BKP_FILE_NAME /Users/fheck/Documents/bkp
+}
