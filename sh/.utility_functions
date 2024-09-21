@@ -49,6 +49,10 @@ function clean-phone() {
   echo ""
 }
 
+function open-task() {
+  open https://wentrack.atlassian.net/browse/$1
+}
+
 function pair() {
   ip_or_hostname=$1
   if grep "^[a-zA-Z]" < <(echo "$ip_or_hostname"); then
@@ -136,4 +140,21 @@ function backup_sublime_tabs() {
   (cd $SUBLIME_SESSION_PATH && zip $BKP_FILE_NAME *)
   mkdir -p /Users/fheck/Documents/bkp
   mv $SUBLIME_SESSION_PATH/$BKP_FILE_NAME /Users/fheck/Documents/bkp
+}
+
+function check_dollar_price() {
+  DOLLAR_VALUE_NOW=$(curl https://economia.awesomeapi.com.br/last/USD-BRL --silent | jq '.USDBRL.ask | tonumber')
+  DESIRED_VALUE=4.9500
+
+  echo $DOLLAR_VALUE_NOW
+  echo $DESIRED_VALUE
+
+  COMPARISON_RESULT=$(echo "$DESIRED_VALUE >= $DOLLAR_VALUE_NOW" | bc -l)
+
+  # Check the result and print a message
+  if [ "$COMPARISON_RESULT" -eq 1 ]; then
+    echo "Ta valendo, troca troca troca"
+  else
+    echo "N ta valendo, nao troca"
+  fi
 }
