@@ -83,3 +83,5 @@
 	defaultBranch = main
 [rerere]
 	enabled = true
+[maintenance]
+	repo = /Users/fheck/projects/ambush/wendys/wendys-flutter
