@@ -3,6 +3,9 @@
 # My random bin
 export PATH="$PATH:/Users/fheck/.local/bin"
 
+# Maven
+export PATH="$PATH:/Users/fheck/.local/apache-maven-3.9.6/bin"
+
 # Android
 export ANDROID_HOME="/Users/fheck/Library/Android/sdk"
 export NDK_HOME="$ANDROID_HOME/ndk"
