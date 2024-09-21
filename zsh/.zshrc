@@ -18,6 +18,10 @@ export PKG_CONFIG_PATH="${PKG_CONFIG_PATH} /usr/local/opt/zlib/lib/pkgconfig"
 source /Users/fheck/.heck/.alias
 source /Users/fheck/.heck/.utility_functions
 
+# Google Cloud SDK PATH and AutoComplete Setup.
+if [ -f '/Users/fheck/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/fheck/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f '/Users/fheck/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/fheck/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+
 ## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
 [[ -f /Users/fheck/.dart-cli-completion/zsh-config.zsh ]] && . /Users/fheck/.dart-cli-completion/zsh-config.zsh || true
