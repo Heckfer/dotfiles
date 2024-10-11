@@ -1,19 +1,5 @@
 #!/usr/bin/env bash
 
-function heckshot() {
-    FILENAME="$1"
-    FILENAME="${FILENAME:-screenshot}"
-    adb shell screencap -p /sdcard/"$FILENAME".png
-    adb pull /sdcard/"$FILENAME".png "$2"
-    adb shell rm /sdcard/"$FILENAME".png
-}
-
-function format() {
-  git diff --name-only | grep -e '\(.*\).swift$' | while read -r line; do
-    swiftformat "$line";
-    # git add $line;
-  done
-}
 
 function unzip() {
   input=${1}
@@ -59,68 +45,6 @@ function pair() {
     ip_or_hostname=${ip_or_hostname}.lan
   fi
   open vnc://"$ip_or_hostname"
-}
-
-function echo-title() {
-    echo ""
-    echo "> $1"
-    echo ""
-}
-
-function echo-and-copy-info() {
-    echo "$1" | pbcopy
-    echo "$1"
-    echo ""
-}
-
-
-function set-flags() {
-    set -o pipefail
-    set -o nounset
-}
-
-function unset-flags() {
-    set +o pipefail
-    set +o nounset
-}
-
-function report-reimbursement() {
-    echo "Usage: reimbursement VALUE \"REASON\" "YYYY-MM-DD - HH:mm BRT" "
-    MESSAGE=$(cat <<-END
-Hi Camila, I am requesting a reimbursement. You can add the amount to my amex sheet.
-
-Total: R\$$1
-Reason: $2
-Date and time: $3 BRT
-    
-END
-    )
-    echo "$MESSAGE"
-    echo "$MESSAGE" | pbcopy
-    echo "--------\nThe message is in the clipboard"
-    
-}
-
-function report-db-update() {
-    echo "Usage: db-update STAGING user-service \"drop table users;\""
-
-    MESSAGE="Hi @channel, I will perform a DB update\n\n\n\`[${1}]\` - \`[${2}]\`\n\n\`\`\`${3}\`\`\`"
-
-    echo "The following is in your clipboard now\!"
-
-    echo "$MESSAGE"
-    echo "$MESSAGE" | pbcopy
-}
-
-function split_csv() {
-        HEADER=$(head -1 "$1")
-        CHUNK=$2
-        tail -n +2 "$1" | split -d -l "$CHUNK" - "$1_split_"
-        for i in "$1"_split_*
-        do
-          gsed -i -e "1i$HEADER" "$i"
-          mv "$i" "$i.csv"
-        done
 }
 
 function stop_vpn() {
