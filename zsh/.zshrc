@@ -15,8 +15,8 @@ export EDITOR="/usr/bin/vim"
 export PKG_CONFIG_PATH="${PKG_CONFIG_PATH} /usr/local/opt/zlib/lib/pkgconfig"
 
 # Helper Functions
-source /Users/fheck/.heck/.alias
-source /Users/fheck/.heck/.utility_functions
+source /Users/fheck/projects/heckfer/private-dotfiles/.aliases
+source /Users/fheck/projects/heckfer/private-dotfiles/.wendys-functions
 
 # Google Cloud SDK PATH and AutoComplete Setup.
 if [ -f '/Users/fheck/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/fheck/Downloads/google-cloud-sdk/path.zsh.inc'; fi
