@@ -17,6 +17,3 @@ export PATH="$PATH:$ANDROID_HOME/emulator"
 # Google Cloud
 export GCP_HOME="/Users/fheck/google-cloud-sdk"
 export PATH="$PATH:$GCP_HOME/bin"
-
-# Brew
-eval "$(/opt/homebrew/bin/brew shellenv)"

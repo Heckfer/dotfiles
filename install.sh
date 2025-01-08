@@ -34,5 +34,6 @@ ln -sf $(pwd)/git/.gitconfig ~/.gitconfig
 ln -sf $(pwd)/git/.gitignore_global ~/.gitignore_global
 ln -sf $(pwd)/zsh/.zshrc ~/.zshrc
 ln -sf $(pwd)/zsh/.zshenv ~/.zshenv
+ln -sf $(pwd)/zsh/.zprofile ~/.zprofile
 
 chsh -s $(which zsh)
