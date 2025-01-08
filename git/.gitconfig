@@ -20,8 +20,8 @@
 
     cs = "!f() { \
         TASK_ID=$(cut -d'/' -f1 <<< $(git rev-parse --abbrev-ref HEAD)); \
-        COMMIT_MESSAGE="[${TASK_ID}]"; \
-        git commit -e -m "\"${COMMIT_MESSAGE}\""; \
+        COMMIT_MESSAGE="[${TASK_ID}] "; \
+        git commit --verbose --edit $@ --message "\"${COMMIT_MESSAGE}\""; \
     }; f"
 
     release = "!f() { \
