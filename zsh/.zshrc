@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # ZSH
 export ZSH="/Users/fheck/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
