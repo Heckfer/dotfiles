@@ -1,12 +1,13 @@
 # ZSH
 export ZSH="/Users/fheck/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting asdf command-time)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting command-time)
 source $ZSH/oh-my-zsh.sh
 
 export EDITOR="/usr/bin/vim"
 
 # ASDF
+. "$HOME/.asdf/asdf.sh"
 . /Users/fheck/.asdf/plugins/java/set-java-home.zsh
 
 # For pkg-config to find zlib
