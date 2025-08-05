@@ -13,6 +13,7 @@ Pods/
 
 # Xcode
 *.xcworkspace/xcuserdata
+*.xip
 
 # asdf
 .tool-versions
