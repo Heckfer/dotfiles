@@ -1,31 +1,5 @@
 #!/usr/bin/env bash
 
-
-function unzip() {
-  input=${1}
-  output_folder=${2:-subtitles}
-
-  case ${#} in
-    1)
-      echo "input - ${input}"
-      echo "output folder - ${output_folder}"
-      7z x -o"${output_folder}" "${input}"
-      echo "deleting ${input}"
-      rm "${input}"
-    ;;
-    2)
-      echo "input - ${input}"
-      echo "output folder - ${output_folder}"
-      7z x -o"${output_folder}" "${input}"
-      echo "deleting ${input}"
-      rm "${input}"
-    ;;
-    *)
-      echo "You passed ${#} arguments, what are you trying?"
-    ;;
-  esac
-}
-
 function clean-phone() {
   PHONE=$(echo "$1" | tr -d -c 0-9)
   echo "$PHONE" | pbcopy
