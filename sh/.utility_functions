@@ -10,7 +10,7 @@ function clean-phone() {
 }
 
 function open-task() {
-  open https://wentrack.atlassian.net/browse/$1
+  open https://pjolodevkb.atlassian.net/browse/$1
 }
 
 function pair() {
