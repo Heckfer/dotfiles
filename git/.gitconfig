@@ -29,3 +29,5 @@
     }; f"
 
     delete-merged-branches = "!git checkout main && git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+[push]
+	autoSetupRemote = true
