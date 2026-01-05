@@ -1,7 +1,9 @@
 # ZSH
 export ZSH="/Users/fheck/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
+
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting command-time)
+
 source $ZSH/oh-my-zsh.sh
 
 export EDITOR="/usr/bin/vim"
