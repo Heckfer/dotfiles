@@ -17,3 +17,7 @@ Pods/
 
 # asdf
 .tool-versions
+
+# AI
+.claude
+GEMINI.md
