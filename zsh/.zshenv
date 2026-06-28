@@ -20,3 +20,13 @@ export PATH="$PATH:$GCP_HOME/bin"
 
 # Flutter
 export PATH="$PATH":"$HOME/.pub-cache/bin"
+
+# pnpm
+export PNPM_HOME="/Users/fheck/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
+
+# antigravity
+export PATH="/Users/fheck/.local/bin:$PATH"
