@@ -8,7 +8,9 @@ Personal macOS dotfiles for Fernando Heck. There is no build, test, or lint step
 
 ## How it's wired together
 
-Config files live under topic directories (`zsh/`, `git/`, `vim/`, `sh/`) and are **symlinked** into `$HOME` by `install.sh` (`ln -sf`). Editing a file here edits the live config directly — no copy step. To register a new dotfile, add both the file and an `ln -sf` line in `install.sh`.
+Config files live under topic directories (`zsh/`, `git/`, `vim/`, `sh/`, `ai/`) and are **symlinked** into `$HOME` by `install.sh` (`ln -sf`). Editing a file here edits the live config directly — no copy step. To register a new dotfile, add both the file and an `ln -sf` line in `install.sh`.
+
+`ai/AGENTS.md` is the single source of truth for cross-tool AI agent preferences. The symlinks form a **hub**: `~/AGENTS.md` → `ai/AGENTS.md`, and each tool's expected file points at the hub — `~/.claude/CLAUDE.md` → `~/AGENTS.md` and `~/.gemini/GEMINI.md` → `~/AGENTS.md`. So every agent reads identical content; edit `ai/AGENTS.md` to change preferences for all of them.
 
 Shell startup order on macOS zsh, by design:
 - `zsh/.zprofile` — login shells; initializes Homebrew (`brew shellenv`).

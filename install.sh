@@ -36,4 +36,11 @@ ln -sf $(pwd)/zsh/.zshrc ~/.zshrc
 ln -sf $(pwd)/zsh/.zshenv ~/.zshenv
 ln -sf $(pwd)/zsh/.zprofile ~/.zprofile
 
+# AI agent preferences: AGENTS.md is the single source of truth. Each tool's
+# expected file is symlinked to ~/AGENTS.md (the hub), which points at the repo.
+ln -sf $(pwd)/ai/AGENTS.md ~/AGENTS.md
+mkdir -p ~/.claude ~/.gemini
+ln -sf ~/AGENTS.md ~/.claude/CLAUDE.md
+ln -sf ~/AGENTS.md ~/.gemini/GEMINI.md
+
 chsh -s $(which zsh)
