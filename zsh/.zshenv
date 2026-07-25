@@ -2,9 +2,6 @@
 
 USER_NAME="fheck"
 
-# ASDF
-export ASDF_DATA_DIR="/Users/$USER_NAME/.asdf"
-export PATH="$ASDF_DATA_DIR/shims:$PATH"
 
 # My random bin
 export PATH="$PATH:/Users/$USER_NAME/.local/bin"

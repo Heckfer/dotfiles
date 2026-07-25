@@ -8,6 +8,9 @@ source $ZSH/oh-my-zsh.sh
 
 export EDITOR="/usr/bin/vim"
 
+# ASDF
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+
 USER_NAME="fheck"
 
 # JAVA_HOME
