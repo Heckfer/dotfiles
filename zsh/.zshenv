@@ -30,6 +30,3 @@ case ":$PATH:" in
   *":$PNPM_HOME/bin:"*) ;;
   *) export PATH="$PNPM_HOME/bin:$PATH" ;;
 esac
-
-# antigravity
-export PATH="/Users/$USER_NAME/.local/bin:$PATH"
