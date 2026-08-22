@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+#
+# Shared helpers for the private backup tree.
+#
+# Sourced by two very different callers, so keep it portable — no arrays, no
+# zsh-isms, no `set -o` (it would leak into the interactive shell):
+#   - sh/.utility_functions, sourced into interactive zsh
+#   - macos/backup.sh, a standalone bash script
+#
+# The tree lives under ~/Documents, which is synced by iCloud Drive
+# (Desktop & Documents Folders) and is private. Nothing under it belongs in
+# git — see bkp_assert_not_in_git.
+#
+# Layout:
+#   $BKP_ROOT/
+#   ├── macos-defaults/
+#   │   ├── 20260822-143000/     one directory per snapshot
+#   │   └── 20260822-150000/
+#   └── sublime-session/
+#       ├── 20260822-143000.zip  one archive per backup
+#       └── 20260822-150000.zip
+#
+# Categories are flat and self-describing; entries are timestamped so they sort
+# chronologically, which is what bkp_prune and bkp_previous rely on.
+
+BKP_ROOT="${BKP_ROOT:-${HOME}/Documents/bkp}"
+
+# Entries kept per category; older ones are pruned.
+BKP_KEEP="${BKP_KEEP:-10}"
+
+bkp_timestamp() {
+    date +%Y%m%d-%H%M%S
+}
+
+# Echo the directory for one category, creating it if needed.
+bkp_category_dir() {
+    local category="$1"
+    local dir="${BKP_ROOT}/${category}"
+    mkdir -p "${dir}"
+    printf '%s\n' "${dir}"
+}
+
+# Refuse to write into a git work tree. The backups are private and carry
+# recent-activity history; a stray `git add` would publish them.
+bkp_assert_not_in_git() {
+    local toplevel
+    if toplevel="$(git -C "${BKP_ROOT}" rev-parse --show-toplevel 2>/dev/null)"; then
+        echo "Refusing to write backups: ${BKP_ROOT}" >&2
+        echo "is inside the git repository at ${toplevel}." >&2
+        echo "These backups are private. Point BKP_ROOT outside any repo." >&2
+        return 1
+    fi
+    return 0
+}
+
+# Reserve a unique path inside a category. Timestamps have one-second
+# granularity, so running a backup twice within the same second would collide
+# and silently overwrite the earlier entry; a numeric suffix keeps both.
+_bkp_unique_path() {
+    local dir="$1" stamp="$2" extension="$3"
+    local candidate="${dir}/${stamp}${extension}"
+    local suffix=2
+    while [ -e "${candidate}" ]; do
+        # Zero-padded so reverse lexical order stays reverse chronological,
+        # which bkp_entries and therefore bkp_prune rely on.
+        candidate="$(printf '%s/%s-%02d%s' "${dir}" "${stamp}" "${suffix}" "${extension}")"
+        suffix=$((suffix + 1))
+    done
+    printf '%s\n' "${candidate}"
+}
+
+# Create and echo a new timestamped directory in a category.
+bkp_new_dir() {
+    local category="$1"
+    local dir path
+    dir="$(bkp_category_dir "${category}")"
+    path="$(_bkp_unique_path "${dir}" "$(bkp_timestamp)" "")"
+    mkdir -p "${path}"
+    printf '%s\n' "${path}"
+}
+
+# Echo a new timestamped file path in a category. The file is not created.
+bkp_new_file() {
+    local category="$1" extension="$2"
+    local dir
+    dir="$(bkp_category_dir "${category}")"
+    _bkp_unique_path "${dir}" "$(bkp_timestamp)" "${extension}"
+}
+
+# List a directory's immediate children, newest name first. Entry names are
+# timestamps, so a reverse lexical sort is a reverse chronological sort.
+bkp_entries() {
+    local dir="$1"
+    [ -d "${dir}" ] || return 0
+    find "${dir}" -mindepth 1 -maxdepth 1 -exec basename {} \; 2>/dev/null | sort -r
+}
+
+# Newest entry in a category, ignoring the one named by $2 (normally the entry
+# just written, so callers can find what to diff against).
+bkp_previous() {
+    local category="$1" exclude="$2"
+    bkp_entries "${BKP_ROOT}/${category}" \
+        | grep -v -x -F "${exclude}" \
+        | head -1
+}
+
+# Delete all but the newest $BKP_KEEP entries in a category.
+bkp_prune() {
+    local category="$1"
+    local dir="${BKP_ROOT}/${category}"
+    local stale
+    [ -d "${dir}" ] || return 0
+    bkp_entries "${dir}" | tail -n "+$((BKP_KEEP + 1))" \
+        | while IFS= read -r stale; do
+            [ -n "${stale}" ] || continue
+            rm -rf "${dir:?}/${stale}"
+            echo "  pruned ${category}/${stale}"
+        done
+}
