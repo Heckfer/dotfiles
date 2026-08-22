@@ -1,0 +1,5 @@
+# Backup output never belongs in this public repo — it carries recent-activity
+# history (recent folders, Go-to-Folder history) that leaks client names and
+# directory layouts. macos/backup.sh writes to $BKP_ROOT (~/Documents/bkp)
+# instead; this entry only catches output from an older copy of the script.
+macos/snapshot/
