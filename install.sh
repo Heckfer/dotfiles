@@ -44,3 +44,8 @@ ln -sf ~/AGENTS.md ~/.claude/CLAUDE.md
 ln -sf ~/AGENTS.md ~/.gemini/GEMINI.md
 
 chsh -s $(which zsh)
+
+echo "== macOS system preferences =="
+echo "- Run ./macos/set-defaults.sh (trackpad, Dock, Finder, Spotlight, dark mode, ...)"
+echo "- Then log out and back in, and see macos/README.md for what must be set by hand"
+echo "- ./macos/backup.sh snapshots current prefs to ~/Documents/bkp (private, iCloud-synced)"
