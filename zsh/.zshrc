@@ -21,7 +21,6 @@ export PKG_CONFIG_PATH="${PKG_CONFIG_PATH} /usr/local/opt/zlib/lib/pkgconfig"
 
 # Helper Functions
 source /Users/$USER_NAME/projects/heckfer/private-dotfiles/.aliases
-source /Users/$USER_NAME/projects/heckfer/private-dotfiles/.wendys-functions
 source /Users/$USER_NAME/projects/heckfer/dotfiles/sh/.utility_functions
 
 # Google Cloud SDK PATH and AutoComplete Setup.
