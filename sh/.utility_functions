@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-# Shared helpers for the private backup tree under ~/Documents/bkp.
-# Absolute path for the same reason .zshrc's source lines are: a sourced file
-# has no portable way to locate its own directory.
-source "$HOME/projects/heckfer/dotfiles/sh/.bkp_common"
+# Backups live in `bkp`, in the private-dotfiles repo and symlinked into
+# ~/.local/bin by install.sh — not in here: one implementation, one place to
+# fix. `bkp backup sublime` replaces the backup_sublime_tabs function this file
+# used to define.
 
 function clean-phone() {
   PHONE=$(echo "$1" | tr -d -c 0-9)
@@ -32,33 +32,6 @@ function stop_vpn() {
 
 function start_vpn() {
   launchctl load /Library/LaunchAgents/com.paloaltonetworks.gp.pangp*
-}
-
-function backup_sublime_tabs() {
-  local session_dir="$HOME/Library/Application Support/Sublime Text/Local"
-  local category="sublime-session"
-
-  if [ ! -d "$session_dir" ]; then
-    echo "Sublime session directory not found: $session_dir" >&2
-    return 1
-  fi
-
-  bkp_assert_not_in_git || return 1
-
-  local archive
-  archive="$(bkp_new_file "$category" ".zip")"
-
-  # Only the live session files. Sublime keeps its own "Backup <name>" copies
-  # alongside them, which are stale (often months old) and tripled the archive
-  # size. They are excluded, not deleted — they are Sublime's data, not ours.
-  if ! (cd "$session_dir" && zip -q "$archive" ./*.sublime_session -x './Backup *'); then
-    echo "Failed to archive the Sublime session" >&2
-    rm -f "$archive"
-    return 1
-  fi
-
-  echo "Sublime session backed up to $archive"
-  bkp_prune "$category"
 }
 
 function check_dollar_price() {

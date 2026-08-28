@@ -38,6 +38,12 @@ ln -sf $(pwd)/zsh/.zprofile ~/.zprofile
 
 # AI agent preferences: AGENTS.md is the single source of truth. Each tool's
 # expected file is symlinked to ~/AGENTS.md (the hub), which points at the repo.
+# bkp lives in the private repo (it encodes what is worth backing up and what
+# leaks), but installation stays here — the same arrangement as the private
+# function files .zshrc sources from there by absolute path.
+mkdir -p ~/.local/bin
+ln -sf ~/projects/heckfer/private-dotfiles/bkp ~/.local/bin/bkp
+
 ln -sf $(pwd)/ai/AGENTS.md ~/AGENTS.md
 mkdir -p ~/.claude ~/.gemini
 ln -sf ~/AGENTS.md ~/.claude/CLAUDE.md
@@ -48,4 +54,7 @@ chsh -s $(which zsh)
 echo "== macOS system preferences =="
 echo "- Run ./macos/set-defaults.sh (trackpad, Dock, Finder, Spotlight, dark mode, ...)"
 echo "- Then log out and back in, and see macos/README.md for what must be set by hand"
-echo "- ./macos/backup.sh snapshots current prefs to ~/Documents/bkp (private, iCloud-synced)"
+echo "- \`bkp restore claude\` puts back Claude Code transcripts and memories"
+echo "- \`bkp restore sublime\` puts back the editor session (quit Sublime first)"
+echo "- \`bkp backup\` takes a fresh snapshot of all three targets"
+echo "- bkp and its docs live in ~/projects/heckfer/private-dotfiles"
