@@ -1,5 +1,19 @@
 # Backup output never belongs in this public repo — it carries recent-activity
 # history (recent folders, Go-to-Folder history) that leaks client names and
-# directory layouts. macos/backup.sh writes to $BKP_ROOT (~/Documents/bkp)
-# instead; this entry only catches output from an older copy of the script.
+# directory layouts. bkp writes to $BKP_ROOT (~/Documents/bkp) instead; this
+# entry only catches output from an older copy of the script.
 macos/snapshot/
+
+# Same reasoning for the other bkp targets, whose output is worse: Claude
+# transcripts carry client code and anything ever pasted into a prompt.
+#
+# bkp itself now lives in the private-dotfiles repo, and its real defence is
+# bkp_assert_not_in_git, which refuses to write anywhere inside a work tree.
+# These entries are the second line, kept here because THIS is the repo a
+# stray snapshot would be published from: they name every category bkp can
+# create at any depth — a category missing here is one this file fails to
+# catch.
+macos-defaults/
+sublime-session/
+claude-context/
+*.tar.gz
