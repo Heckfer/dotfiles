@@ -6,5 +6,8 @@
         "MarkdownPreview",
         "Pretty JSON",
         "Dracula Color Scheme"
-    ]
+    ],
+    "in_process_packages":
+    [
+    ],
 }
