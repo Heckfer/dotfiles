@@ -1,0 +1,8 @@
+# One VS Code extension id per line. Blank lines and # comments are ignored.
+# Find an id with `code --list-extensions`, or on the extension's Marketplace page.
+streetsidesoftware.code-spell-checker
+ms-azuretools.vscode-docker
+EditorConfig.EditorConfig
+eamodio.gitlens
+esbenp.prettier-vscode
+dracula-theme.theme-dracula
