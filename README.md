@@ -32,11 +32,21 @@ cd dotfiles && brew bundle
 
 # 5. macOS system preferences, then log out and back in.
 ./macos/set-defaults.sh
+
+# 6. Claude Code skills.
+claude plugins install mattpocock-skills
 ```
 
-`install.sh` prints a list of GUI apps, oh-my-zsh, and editor plugins that it
-cannot install for you, then does the real symlinking. **Read its output** — it
-is mostly instructions, not automation.
+Step 1 needs `git`, which on a fresh machine means macOS will pop up the Xcode
+command line tools installer. Accept it; `install.sh` checks for the tools again
+and triggers the same installer if it is somehow still missing.
+
+`install.sh` installs the Xcode command line tools (so `git` works), clones
+oh-my-zsh and its plugins, clones and imports the Dracula theme for Terminal.app,
+symlinks the dotfiles, and runs `editors/install-plugins.sh`. It is idempotent —
+re-running it is safe and is the way to pick up new entries. It finishes by
+printing the GUI apps it cannot install for you plus a list of reminders;
+**read that output**.
 
 `configure.sh` only registers ASDF plugins; it pins no versions. Set those per
 project with a `.tool-versions` file.
@@ -67,6 +77,7 @@ documentation is in the private repo's `README.md`.
 | `sh/` | `.utility_functions` — small helpers sourced into every interactive shell |
 | `ai/` | `AGENTS.md`, the single source of truth for AI agent preferences |
 | `macos/` | `set-defaults.sh` and its notes — see `macos/README.md` |
+| `editors/` | VS Code extension list, Sublime package list, and `install-plugins.sh` which applies both |
 | `keyboard/` | Exported Keychron K12 Pro keymap. Data for the QMK/VIA configurator, not loaded by anything here |
 | `Brewfile` | `brew bundle` installs it |
 
@@ -80,6 +91,36 @@ documentation is in the private repo's `README.md`.
 
 `.zshrc` sources `.aliases` from `private-dotfiles` by absolute path, so that
 repo must be cloned to the path above or every new shell reports a missing file.
+
+### Editor plugins
+
+VS Code and Sublime Text are installed by hand, so `editors/install-plugins.sh`
+skips whichever one it cannot find and is meant to be re-run once they are
+present. `install.sh` calls it, or run it directly.
+
+- **VS Code** — `editors/vscode-extensions.txt` is one extension id per line,
+  installed with `code --install-extension`. This needs the `code` command on
+  `PATH`: in VS Code, run *Shell Command: Install `code` command in PATH* from
+  the command palette. Add an extension by appending its id; get ids for what
+  you already have with `code --list-extensions`.
+- **Sublime Text** — `editors/sublime/Package Control.sublime-settings` is
+  symlinked into Sublime's `Packages/User` directory. Package Control reads its
+  `installed_packages` list on launch and installs anything missing, so adding a
+  package name there is the whole job. Package Control itself must be installed
+  once by hand (*Command Palette > Install Package Control*), and Sublime has to
+  have been launched at least once before the `Packages/User` directory exists.
+  The script also links `subl` to `~/.local/bin/sublime`, which is on `PATH` and
+  needs no `sudo`.
+
+### Themes
+
+The Dracula theme for Terminal.app is cloned to `~/projects/external/dracula-terminal-app`
+(the `external` directory is for upstream repos that are not ours; `install.sh`
+creates it). `install.sh` imports the profile with `open` and points
+`com.apple.Terminal`'s *Default* and *Startup Window Settings* at it. Terminal
+rewrites its own preferences when it quits, so if `install.sh` was run from
+Terminal those writes can be lost — quit and reopen Terminal and confirm the
+profile is the default, setting it by hand if not.
 
 ### AI agent preferences
 
