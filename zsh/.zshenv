@@ -30,3 +30,6 @@ case ":$PATH:" in
   *":$PNPM_HOME/bin:"*) ;;
   *) export PATH="$PNPM_HOME/bin:$PATH" ;;
 esac
+
+# Antigravity CLI
+export PATH="/Users/fheck/.local/bin:$PATH"
