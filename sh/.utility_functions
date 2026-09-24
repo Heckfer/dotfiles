@@ -34,19 +34,26 @@ function start_vpn() {
   launchctl load /Library/LaunchAgents/com.paloaltonetworks.gp.pangp*
 }
 
-function check_dollar_price() {
-  DOLLAR_VALUE_NOW=$(curl https://economia.awesomeapi.com.br/last/USD-BRL --silent | jq '.USDBRL.ask | tonumber')
-  DESIRED_VALUE=4.9500
+function check-dollar-price() {
+  local desired_value=4.95
+  local response dollar_value_now
 
-  echo $DOLLAR_VALUE_NOW
-  echo $DESIRED_VALUE
+  if ! response=$(curl --silent --show-error --fail https://economia.awesomeapi.com.br/last/USD-BRL 2>&1); then
+    echo "Could not fetch the exchange rate: $response" >&2
+    return 1
+  fi
 
-  COMPARISON_RESULT=$(echo "$DESIRED_VALUE >= $DOLLAR_VALUE_NOW" | bc -l)
+  dollar_value_now=$(printf '%s' "$response" | jq -r '.USDBRL.bid // empty' 2>/dev/null)
+  if [ -z "$dollar_value_now" ]; then
+    echo "Unexpected API response: $response" >&2
+    return 1
+  fi
 
-  # Check the result and print a message
-  if [ "$COMPARISON_RESULT" -eq 1 ]; then
-    echo "Ta valendo, troca troca troca"
+  echo "USD now: R\$ $dollar_value_now (target: R\$ $desired_value)"
+
+  if [ "$(echo "$dollar_value_now >= $desired_value" | bc -l)" -eq 1 ]; then
+    echo "Worth it, sell now"
   else
-    echo "N ta valendo, nao troca"
+    echo "Not worth it, hold"
   fi
 }
