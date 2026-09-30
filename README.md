@@ -21,11 +21,13 @@ mkdir -p ~/projects/heckfer && cd ~/projects/heckfer
 git clone git@github.com:Heckfer/dotfiles.git
 git clone git@github.com:Heckfer/private-dotfiles.git
 
-# 2. Homebrew packages (CLI helpers, plus the compile-time deps ASDF needs).
-cd dotfiles && brew bundle
+# 2. Install Homebrew, symlink the dotfiles, link bkp onto PATH, set zsh as
+#    the login shell.
+cd dotfiles && ./install.sh
 
-# 3. Symlink the dotfiles, link bkp onto PATH, set zsh as the login shell.
-./install.sh
+# 3. Open a new terminal (so .zprofile puts brew on PATH), then install the
+#    Homebrew packages: CLI helpers, plus the compile-time deps ASDF needs.
+cd ~/projects/heckfer/dotfiles && brew bundle
 
 # 4. Register the ASDF language plugins.
 ./configure.sh
@@ -41,8 +43,8 @@ Step 1 needs `git`, which on a fresh machine means macOS will pop up the Xcode
 command line tools installer. Accept it; `install.sh` checks for the tools again
 and triggers the same installer if it is somehow still missing.
 
-`install.sh` installs the Xcode command line tools (so `git` works), clones
-oh-my-zsh and its plugins, clones and imports the Dracula theme for Terminal.app,
+`install.sh` installs the Xcode command line tools (so `git` works) and Homebrew
+(at `/opt/homebrew`, the path `.zprofile` expects), clones oh-my-zsh and its plugins, clones and imports the Dracula theme for Terminal.app,
 symlinks the dotfiles, and runs `editors/install-plugins.sh`. It is idempotent —
 re-running it is safe and is the way to pick up new entries. It finishes by
 printing the GUI apps it cannot install for you plus a list of reminders;

@@ -8,6 +8,9 @@ EXTERNAL_DIR="$HOME/projects/external"
 OMZ_DIR="$HOME/.oh-my-zsh"
 DRACULA_TERMINAL_DIR="$EXTERNAL_DIR/dracula-terminal-app"
 DRACULA_TERMINAL_PROFILE="Dracula"
+# .zprofile loads Homebrew from this exact path (the Apple Silicon default).
+HOMEBREW_BIN="/opt/homebrew/bin/brew"
+HOMEBREW_INSTALLER_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 
 install_xcode_command_line_tools() {
     echo "== Xcode command line tools =="
@@ -26,6 +29,22 @@ install_xcode_command_line_tools() {
     done
 
     echo "- installed; git is now available"
+}
+
+install_homebrew() {
+    echo "== Homebrew =="
+
+    if [[ -x "$HOMEBREW_BIN" ]]; then
+        echo "- already installed ($HOMEBREW_BIN)"
+        return
+    fi
+
+    echo "- running the official installer; it asks for your password"
+    /bin/bash -c "$(curl -fsSL "$HOMEBREW_INSTALLER_URL")"
+
+    # The installer ends by telling you to add brew to PATH. Ignore that: the
+    # .zprofile symlinked below already does it, from the next login shell on.
+    echo "- installed; open a new terminal before running brew bundle"
 }
 
 clone_if_missing() {
@@ -123,9 +142,10 @@ print_manual_steps() {
 - Chrome
 - VLC
 - ASDF
-- Homebrew
 
 == Reminders ==
+- Open a new terminal (so .zprofile puts brew on PATH), then run brew bundle
+  from this directory for the CLI helpers and the ASDF build dependencies
 - After installing VS Code and Sublime, run ./editors/install-plugins.sh again —
   it skips whichever editor is missing, so a second pass picks up the rest.
 - Claude Code skills: claude plugins install mattpocock-skills
@@ -141,6 +161,7 @@ EOF
 }
 
 install_xcode_command_line_tools
+install_homebrew
 install_oh_my_zsh
 install_dracula_terminal_theme
 symlink_dotfiles
