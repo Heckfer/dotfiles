@@ -83,3 +83,354 @@ function git-pull-all() {
     fi
   done
 }
+
+# ssh-keys: see which SSH keys exist and what ~/.ssh/config uses them for,
+# create new keys, and point a host at a key.
+#   ssh-keys          list keys, the hosts using each, and what each Host does
+#   ssh-keys new      create a key (asks for algorithm, purpose and comment)
+#   ssh-keys host     add a Host block to ~/.ssh/config for an existing key
+# Helpers are prefixed _sshkeys_ so they can't collide with zsh's _ssh
+# completion functions.
+function ssh-keys() {
+  case "$1" in
+    ""|list) _sshkeys_list ;;
+    new) _sshkeys_new ;;
+    host) _sshkeys_host ;;
+    *)
+      echo "usage: ssh-keys [list|new|host]" >&2
+      return 1
+      ;;
+  esac
+}
+
+# One line per Host block in ~/.ssh/config, tab-separated:
+#   alias  hostname  user  port  identitiesonly  identityfiles
+# Identity files are |-joined with ~ expanded. Empty fields become "-" because
+# `read` collapses consecutive tabs. Match blocks and Include are not followed.
+function _sshkeys_config_hosts() {
+  [ -f "$HOME/.ssh/config" ] || return 0
+  awk '
+    function flush() {
+      if (host == "") return
+      print host "\t" (hn == "" ? host : hn) "\t" (usr == "" ? "-" : usr) "\t" \
+        (port == "" ? "22" : port) "\t" (only == "" ? "no" : only) "\t" (ids == "" ? "-" : ids)
+    }
+    { sub(/^[ \t]+/, ""); sub(/[ \t\r]+$/, "") }
+    /^#/ || $0 == "" { next }
+    {
+      key = $0; sub(/[ \t=].*/, "", key); key = tolower(key)
+      val = $0; sub(/^[^ \t=]+[ \t]*=?[ \t]*/, "", val); gsub(/"/, "", val)
+    }
+    key == "host" || key == "match" {
+      flush()
+      host = (key == "host") ? val : ""; hn = ""; usr = ""; port = ""; only = ""; ids = ""
+      next
+    }
+    key == "hostname" { hn = val }
+    key == "user" { usr = val }
+    key == "port" { port = val }
+    key == "identitiesonly" { only = tolower(val) }
+    key == "identityfile" {
+      sub(/^~/, ENVIRON["HOME"], val)
+      ids = (ids == "") ? val : ids "|" val
+    }
+    END { flush() }
+  ' "$HOME/.ssh/config"
+}
+
+# Replace $HOME with ~ for display.
+function _sshkeys_tilde() {
+  printf '%s\n' "$1" | sed "s|^$HOME|~|"
+}
+
+function _sshkeys_list() {
+  local hosts agent pub key name info bits fp type comment flags users
+  local host hn usr port only ids id shared
+
+  hosts=$(_sshkeys_config_hosts)
+  agent=$(ssh-add -l 2>/dev/null | awk '{print $2}')
+
+  echo "Keys in ~/.ssh"
+  find "$HOME/.ssh" -maxdepth 1 -type f -name '*.pub' | sort | while IFS= read -r pub; do
+    key="${pub%.pub}"
+    name="${key##*/}"
+    if ! info=$(ssh-keygen -lf "$pub" 2>/dev/null); then
+      printf '  %s  (unreadable public key)\n' "$name"
+      continue
+    fi
+    # ssh-keygen -l prints: <bits> <fingerprint> <comment> (<TYPE>)
+    bits="${info%% *}"
+    fp=$(printf '%s\n' "$info" | awk '{print $2}')
+    type=$(printf '%s\n' "$info" | awk '{print $NF}' | tr -d '()')
+    comment=$(printf '%s\n' "$info" | sed -E 's/^[0-9]+ [^ ]+ //; s/ \([^)]*\)$//')
+    flags=""
+    printf '%s\n' "$agent" | grep -qxF "$fp" && flags=" [loaded in agent]"
+    [ -f "$key" ] || flags="$flags [public key only]"
+    printf '  %-26s %-8s %-5s %s%s\n' "$name" "$type" "$bits" "$comment" "$flags"
+
+    users=$(printf '%s\n' "$hosts" | awk -F'\t' -v k="$key" '
+      { n = split($6, ids, "|"); for (i = 1; i <= n; i++) if (ids[i] == k) print $1 }')
+    if [ -n "$users" ]; then
+      printf '%s\n' "$users" | while IFS= read -r host; do
+        printf '      used by Host %s\n' "$host"
+      done
+    else
+      case "$name" in
+        id_rsa|id_ecdsa|id_ecdsa_sk|id_ed25519|id_ed25519_sk)
+          echo "      not in config, but ssh offers it to every host as a default key" ;;
+        *)
+          echo "      not in config: ssh only uses it if it is loaded in ssh-agent" ;;
+      esac
+    fi
+  done
+
+  echo
+  echo "Hosts in ~/.ssh/config"
+  if [ -z "$hosts" ]; then
+    echo "  (none — run 'ssh-keys host' to add one)"
+    return 0
+  fi
+  printf '%s\n' "$hosts" | while IFS=$'\t' read -r host hn usr port only ids; do
+    echo "  Host $host"
+    case "$host" in
+      *'*'*|*'?'*)
+        echo "      defaults for every host matching '$host'" ;;
+      *)
+        if [ "$usr" = "-" ]; then
+          printf '      ssh %s connects to %s' "$host" "$hn"
+        else
+          printf '      ssh %s connects to %s@%s' "$host" "$usr" "$hn"
+        fi
+        [ "$port" = "22" ] || printf ' on port %s' "$port"
+        echo
+        if [ "$host" != "$hn" ]; then
+          case "$host" in
+            *.*) echo "      keeps the name $host in git URLs but actually connects to $hn" ;;
+            *) echo "      alias for $hn: use $usr@$host:<owner>/<repo>.git instead of $usr@$hn:..." ;;
+          esac
+        fi
+        [ "$port" = "443" ] && echo "      port 443 gets SSH through networks that block port 22"
+        ;;
+    esac
+    if [ "$ids" = "-" ]; then
+      echo "      no IdentityFile: ssh tries the default keys and the agent"
+    else
+      printf '%s\n' "$ids" | tr '|' '\n' | while IFS= read -r id; do
+        if [ -f "$id" ]; then
+          echo "      key $(_sshkeys_tilde "$id")"
+        else
+          echo "      key $(_sshkeys_tilde "$id")  <-- MISSING: create it with 'ssh-keys new'"
+        fi
+      done
+    fi
+  done
+
+  # Two Host blocks reaching the same server with different keys only work
+  # reliably with IdentitiesOnly, otherwise the agent may offer the wrong key
+  # first and the server logs you in as the wrong account.
+  shared=$(printf '%s\n' "$hosts" | awk -F'\t' '
+    $6 != "-" { count[$2]++; names[$2] = names[$2] " " $1; if ($5 != "yes") loose[$2] = 1 }
+    END { for (h in count) if (count[h] > 1 && loose[h]) print h ":" names[h] }')
+  if [ -n "$shared" ]; then
+    echo
+    printf '%s\n' "$shared" | while IFS= read -r line; do
+      echo "Warning: ${line%%:*} is reached by several Host blocks (${line#*: })."
+      echo "  Add 'IdentitiesOnly yes' to each so ssh only offers that block's key;"
+      echo "  otherwise the server may log you in with the other account's key."
+    done
+  fi
+}
+
+# Prints the answer on stdout; the prompt goes to stderr so callers can use $().
+# Pass "" as the fallback when there is none.
+function _sshkeys_ask() {
+  local answer
+  printf '%s' "$1" >&2
+  [ -n "$2" ] && printf ' [%s]' "$2" >&2
+  printf ': ' >&2
+  IFS= read -r answer
+  printf '%s\n' "${answer:-$2}"
+}
+
+function _sshkeys_new() {
+  local choice algo bits purpose comment file
+  cat <<'MENU'
+Which algorithm?
+  1) ed25519      recommended: short keys, fast, supported by GitHub, GitLab and Bitbucket
+  2) rsa 4096     only for old servers that reject ed25519
+  3) ecdsa 521    NIST curve; pick it only if a policy requires NIST
+  4) ed25519-sk   ed25519 bound to a FIDO2 hardware key (YubiKey); the key must be
+                  plugged in and touched on every use
+MENU
+  choice=$(_sshkeys_ask "Choice" "1")
+  case "$choice" in
+    1) algo=ed25519; bits="" ;;
+    2) algo=rsa; bits=4096 ;;
+    3) algo=ecdsa; bits=521 ;;
+    4) algo=ed25519-sk; bits="" ;;
+    *) echo "Unknown choice: $choice" >&2; return 1 ;;
+  esac
+
+  purpose=$(_sshkeys_ask "What is it for? (e.g. acme, work-github)" "")
+  if ! printf '%s' "$purpose" | grep -qE '^[A-Za-z0-9._-]+$'; then
+    echo "Use letters, digits, '.', '_' or '-' only." >&2
+    return 1
+  fi
+  file="$HOME/.ssh/id_$(printf '%s' "$algo" | tr - _)_$purpose"
+  if [ -e "$file" ]; then
+    echo "$(_sshkeys_tilde "$file") already exists." >&2
+    return 1
+  fi
+  comment=$(_sshkeys_ask "Comment, usually your email for that account" "$(git config user.email)")
+
+  echo
+  echo "ssh-keygen will now ask for a passphrase. Use one: with UseKeychain in the"
+  echo "Host block, macOS remembers it so you won't be asked again."
+  if [ -n "$bits" ]; then
+    ssh-keygen -t "$algo" -b "$bits" -C "$comment" -f "$file" || return 1
+  else
+    ssh-keygen -t "$algo" -C "$comment" -f "$file" || return 1
+  fi
+  chmod 600 "$file"
+
+  echo
+  case "$(_sshkeys_ask "Point a host at this key now? (y/n)" "y")" in
+    y|Y|yes) _sshkeys_add_host "$file" ;;
+    *) echo "Later: ssh-keys host" ;;
+  esac
+}
+
+function _sshkeys_host() {
+  local keys choice key
+  keys=$(find "$HOME/.ssh" -maxdepth 1 -type f -name '*.pub' | sort | sed 's/\.pub$//')
+  if [ -z "$keys" ]; then
+    echo "No keys in ~/.ssh yet. Create one with 'ssh-keys new'." >&2
+    return 1
+  fi
+  echo "Which key?"
+  printf '%s\n' "$keys" | awk -v home="$HOME" '{ sub("^" home, "~"); printf "  %d) %s\n", NR, $0 }'
+  choice=$(_sshkeys_ask "Choice" "")
+  key=$(printf '%s\n' "$keys" | sed -n "${choice}p" 2>/dev/null)
+  if [ -z "$key" ]; then
+    echo "Unknown choice: $choice" >&2
+    return 1
+  fi
+  _sshkeys_add_host "$key"
+}
+
+# Appends a Host block for private key $1 to ~/.ssh/config.
+function _sshkeys_add_host() {
+  local key="$1" config="$HOME/.ssh/config" hosts hn host_alias usr port others block
+  hosts=$(_sshkeys_config_hosts)
+
+  echo
+  hn=$(_sshkeys_ask "Server hostname (e.g. github.com, bitbucket.org, gitlab.com)" "")
+  [ -n "$hn" ] || { echo "A hostname is required." >&2; return 1; }
+
+  others=$(printf '%s\n' "$hosts" | awk -F'\t' -v h="$hn" '$2 == h { print $1 }' | tr '\n' ' ')
+  if [ -n "$others" ]; then
+    echo "You already reach $hn through: $others"
+    echo "Give this key its own alias (e.g. the account or company name) and clone"
+    echo "with git@<alias>:<owner>/<repo>.git so ssh picks this key."
+    host_alias=$(_sshkeys_ask "Host alias" "")
+  else
+    echo "Use the hostname itself as the alias if this is your only account on $hn;"
+    echo "pick a short name instead if you'll have several accounts there."
+    host_alias=$(_sshkeys_ask "Host alias" "$hn")
+  fi
+  [ -n "$host_alias" ] || { echo "An alias is required." >&2; return 1; }
+  if printf '%s\n' "$hosts" | awk -F'\t' -v a="$host_alias" '$1 == a { found = 1 } END { exit !found }'; then
+    _sshkeys_repoint_host "$host_alias" "$key"
+    return
+  fi
+
+  usr=$(_sshkeys_ask "User (git for GitHub, GitLab, Bitbucket)" "git")
+  echo "Port: leave 22 unless port 22 is blocked; then use 443 with"
+  echo "HostName ssh.github.com (GitHub) or altssh.gitlab.com (GitLab)."
+  port=$(_sshkeys_ask "Port" "22")
+
+  block="Host $host_alias
+  HostName $hn
+  User $usr"
+  [ "$port" = "22" ] || block="$block
+  Port $port"
+  block="$block
+  IdentityFile $(_sshkeys_tilde "$key")
+  IdentitiesOnly yes
+  AddKeysToAgent yes
+  UseKeychain yes"
+
+  echo
+  echo "This will be appended to ~/.ssh/config:"
+  echo
+  printf '%s\n' "$block" | sed 's/^/    /'
+  echo
+  case "$(_sshkeys_ask "Append it? (y/n)" "y")" in
+    y|Y|yes) ;;
+    *) echo "Nothing written."; return 0 ;;
+  esac
+
+  touch "$config"
+  # Keep a blank line between blocks even if the file lacks a final newline.
+  [ -s "$config" ] && [ -n "$(tail -c 1 "$config")" ] && echo >> "$config"
+  [ -s "$config" ] && [ -n "$(tail -n 1 "$config")" ] && echo >> "$config"
+  printf '%s\n' "$block" >> "$config"
+  chmod 600 "$config"
+
+  echo "Added Host $host_alias to ~/.ssh/config."
+  _sshkeys_next_steps "$key" "$usr" "$host_alias"
+}
+
+# Points the existing Host block $1 at private key $2: replaces its
+# IdentityFile lines and adds IdentitiesOnly if the block lacks it.
+function _sshkeys_repoint_host() {
+  local host_alias="$1" key="$2" config="$HOME/.ssh/config" current tmp
+  current=$(_sshkeys_config_hosts | awk -F'\t' -v a="$host_alias" '$1 == a { print $6 }' | tr '|' ' ')
+  echo "Host $host_alias already exists and uses: $(_sshkeys_tilde "$current")"
+  case "$(_sshkeys_ask "Point it at $(_sshkeys_tilde "$key") instead? (y/n)" "y")" in
+    y|Y|yes) ;;
+    *) echo "Nothing written."; return 0 ;;
+  esac
+
+  tmp=$(mktemp) || return 1
+  awk -v a="$host_alias" -v id="$(_sshkeys_tilde "$key")" '
+    function finish() {
+      if (!inside) return
+      if (!wrote) print indent "IdentityFile " id
+      if (!only) print indent "IdentitiesOnly yes"
+      inside = 0
+    }
+    {
+      line = $0; sub(/^[ \t]+/, "", line)
+      key = line; sub(/[ \t=].*/, "", key); key = tolower(key)
+      val = line; sub(/^[^ \t=]+[ \t]*=?[ \t]*/, "", val)
+    }
+    key == "host" || key == "match" {
+      finish()
+      inside = (key == "host" && val == a); wrote = 0; only = 0; indent = ""
+      print; next
+    }
+    inside && key != "" && key !~ /^#/ { match($0, /^[ \t]*/); indent = substr($0, 1, RLENGTH) }
+    inside && key == "" { finish() }
+    inside && key == "identityfile" { if (!wrote) print indent "IdentityFile " id; wrote = 1; next }
+    inside && key == "identitiesonly" { only = 1 }
+    { print }
+    END { finish() }
+  ' "$config" > "$tmp" && cp "$config" "$config.bak" && cat "$tmp" > "$config"
+  rm -f "$tmp"
+  echo "Updated ~/.ssh/config (previous version saved as ~/.ssh/config.bak)."
+  _sshkeys_next_steps "$key" "$(_sshkeys_config_hosts | awk -F'\t' -v a="$host_alias" '$1 == a { print $3 }')" "$host_alias"
+}
+
+# Copies public key $1.pub and explains how to register and test it for
+# user $2 on Host $3.
+function _sshkeys_next_steps() {
+  pbcopy < "$1.pub"
+  echo
+  echo "The public key is in your clipboard; add it to the account:"
+  echo "  GitHub     Settings > SSH and GPG keys > New SSH key"
+  echo "  GitLab     Preferences > SSH Keys"
+  echo "  Bitbucket  Personal settings > SSH keys"
+  echo "Then test it with:  ssh -T $2@$3"
+  echo "And clone with:     git clone $2@$3:<owner>/<repo>.git"
+}
