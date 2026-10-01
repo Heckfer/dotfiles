@@ -82,6 +82,7 @@ documentation is in the private repo's `README.md`.
 | `editors/` | VS Code extension list, Sublime package list, and `install-plugins.sh` which applies both |
 | `keyboard/` | Exported Keychron K12 Pro keymap. Data for the QMK/VIA configurator, not loaded by anything here |
 | `Brewfile` | `brew bundle` installs it |
+| `lefthook.yml` | Git hooks: `shellcheck` on staged shell scripts before each commit |
 
 ### Shell startup order
 
@@ -159,7 +160,10 @@ and `start_vpn` / `stop_vpn`.
 ## Conventions for changes
 
 - Shell scripts use `set -o errexit -o pipefail -o nounset`. Keep that on new
-  ones, and keep them `shellcheck`-clean.
+  ones, and keep them `shellcheck`-clean. A lefthook pre-commit hook runs
+  `shellcheck` on staged scripts; enable it once per clone with
+  `lefthook install` (lefthook comes from the Brewfile). A new script without
+  a `.sh` extension needs its path added to the `glob` in `lefthook.yml`.
 - Indentation is 4 spaces.
 - To register a new dotfile, add both the file and an `ln -sf` line in
   `install.sh`.

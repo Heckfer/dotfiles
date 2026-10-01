@@ -1,0 +1,10 @@
+# Git hooks, run by lefthook (from the Brewfile). Activate once per clone with
+# `lefthook install`.
+pre-commit:
+  jobs:
+    - name: shellcheck
+      # .utility_functions has no extension, so it is listed by path.
+      glob:
+        - "*.sh"
+        - "sh/.utility_functions"
+      run: shellcheck {staged_files}
