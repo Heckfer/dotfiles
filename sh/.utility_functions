@@ -15,7 +15,7 @@ function clean-phone() {
 }
 
 function open-task() {
-  open https://pjolodevkb.atlassian.net/browse/$1
+  open https://pjolodevkb.atlassian.net/browse/"$1"
 }
 
 function pair() {
@@ -145,7 +145,7 @@ function _sshkeys_tilde() {
 
 function _sshkeys_list() {
   local hosts agent pub key name info bits fp type comment flags users
-  local host hn usr port only ids id shared
+  local host hn usr port ids id shared
 
   hosts=$(_sshkeys_config_hosts)
   agent=$(ssh-add -l 2>/dev/null | awk '{print $2}')
@@ -190,7 +190,7 @@ function _sshkeys_list() {
     echo "  (none — run 'ssh-keys host' to add one)"
     return 0
   fi
-  printf '%s\n' "$hosts" | while IFS=$'\t' read -r host hn usr port only ids; do
+  printf '%s\n' "$hosts" | while IFS=$'\t' read -r host hn usr port _ ids; do
     echo "  Host $host"
     case "$host" in
       *'*'*|*'?'*)
