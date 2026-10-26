@@ -1,5 +1,6 @@
 # =================== Helpers ===================
 
+brew "aria2"
 brew "bat"
 brew "diff-so-fancy"
 brew "fd"
